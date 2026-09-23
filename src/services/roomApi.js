@@ -1,32 +1,32 @@
 import axios from 'axios'
 
 const API_BASE_URL = 'https://dummyjson.com/products'
-const ROOMS_STORAGE_KEY = 'hbms_rooms'
+const MUTATIONS_STORAGE_KEY = 'hbms_room_mutations'
 
-// Preset high-resolution luxury hotel room images (with reliable Unsplash hospitality collection)
+// Preset high-resolution luxury hotel room images matching hotel tiers
 export const PRESET_ROOM_IMAGES = [
-  {
-    label: 'Ocean Penthouse',
-    url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80',
-  },
   {
     label: 'Deluxe King Suite',
     url: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1000&q=80',
-  },
-  {
-    label: 'Executive Balcony',
-    url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80',
-  },
-  {
-    label: 'Presidential Suite',
-    url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1000&q=80',
   },
   {
     label: 'Standard King Room',
     url: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1000&q=80',
   },
   {
-    label: 'Garden Villa',
+    label: 'Executive Balcony Suite',
+    url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80',
+  },
+  {
+    label: 'Ocean Penthouse',
+    url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80',
+  },
+  {
+    label: 'Presidential Royal Suite',
+    url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1000&q=80',
+  },
+  {
+    label: 'Luxury Garden Villa',
     url: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1000&q=80',
   },
 ]
@@ -57,393 +57,277 @@ export const ROOM_TYPES = [
   'Luxury Garden Villa',
 ]
 
-// Initial seed rooms data
-const INITIAL_ROOMS = [
-  {
-    id: 'room-101',
-    roomNumber: '101',
-    roomType: 'Deluxe King Suite',
-    pricePerNight: 8500,
-    capacity: 2,
-    floorNumber: 1,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[1].url,
-    bedType: 'King Size Bed',
-    roomSize: '48 m² / 516 sq ft',
-    description:
-      'Immerse in refined luxury with hand-crafted Italian linens, private lounge corner, smart ambient lighting, and panoramic garden views.',
-    amenities: ['High-speed Wi-Fi', 'King Size Bed', 'Smart 4K TV', 'Mini Bar', 'Climate Control'],
-  },
-  {
-    id: 'room-102',
-    roomNumber: '102',
-    roomType: 'Standard King Room',
-    pricePerNight: 4800,
-    capacity: 2,
-    floorNumber: 1,
-    availabilityStatus: 'Occupied',
-    roomImage: PRESET_ROOM_IMAGES[4].url,
-    bedType: 'Queen Double Bed',
-    roomSize: '36 m² / 387 sq ft',
-    description:
-      'An elegant contemporary retreat featuring acoustic soundproofing, ergonomic workspace, rainfall shower, and plush hospitality bedding.',
-    amenities: ['High-speed Wi-Fi', 'Smart 4K TV', 'Climate Control', '24/7 Room Service'],
-  },
-  {
-    id: 'room-201',
-    roomNumber: '201',
-    roomType: 'Executive Family Suite',
-    pricePerNight: 14500,
-    capacity: 4,
-    floorNumber: 2,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[2].url,
-    bedType: 'Two Queen Beds',
-    roomSize: '68 m² / 731 sq ft',
-    description:
-      'Spacious split-living suite tailored for families and discerning executives, featuring expansive balcony seating, marble double vanities, and dining area.',
-    amenities: ['High-speed Wi-Fi', 'Balcony / Terrace', 'Smart 4K TV', 'Espresso Machine', 'Mini Bar'],
-  },
-  {
-    id: 'room-202',
-    roomNumber: '202',
-    roomType: 'Deluxe King Suite',
-    pricePerNight: 9200,
-    capacity: 2,
-    floorNumber: 2,
-    availabilityStatus: 'Under Maintenance',
-    roomImage: PRESET_ROOM_IMAGES[1].url,
-    bedType: 'King Size Bed',
-    roomSize: '50 m² / 538 sq ft',
-    description:
-      'Sophisticated suite on the second tier boasting sunrise vistas, soaking tub, designer bathrobes, and complimentary evening cocktails.',
-    amenities: ['High-speed Wi-Fi', 'King Size Bed', 'Marble Bathroom', 'Balcony / Terrace'],
-  },
-  {
-    id: 'room-301',
-    roomNumber: '301',
-    roomType: 'Penthouse Ocean Suite',
-    pricePerNight: 24500,
-    capacity: 3,
-    floorNumber: 3,
-    availabilityStatus: 'Occupied',
-    roomImage: PRESET_ROOM_IMAGES[0].url,
-    bedType: 'California King Bed',
-    roomSize: '92 m² / 990 sq ft',
-    description:
-      'Perched on the upper crest with floor-to-ceiling glass wrapping the azure coastline, private outdoor jacuzzi, and dedicated butler service.',
-    amenities: [
-      'High-speed Wi-Fi',
-      'Ocean View',
-      'Private Jacuzzi',
-      'King Size Bed',
-      'Infinity Pool Access',
-      'Espresso Machine',
-    ],
-  },
-  {
-    id: 'room-302',
-    roomNumber: '302',
-    roomType: 'Executive Family Suite',
-    pricePerNight: 15200,
-    capacity: 4,
-    floorNumber: 3,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[2].url,
-    bedType: 'King Bed + Sofa Bed',
-    roomSize: '72 m² / 775 sq ft',
-    description:
-      'Contemporary luxury suite with two separate bathrooms, custom walk-in closet, and premium entertainment system for family travelers.',
-    amenities: ['High-speed Wi-Fi', 'Balcony / Terrace', '24/7 Room Service', 'Smart 4K TV'],
-  },
-  {
-    id: 'room-401',
-    roomNumber: '401',
-    roomType: 'Presidential Royal Suite',
-    pricePerNight: 38000,
-    capacity: 6,
-    floorNumber: 4,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[3].url,
-    bedType: 'Master King + Twin Suite',
-    roomSize: '150 m² / 1614 sq ft',
-    description:
-      'The pinnacle of Grand Azure hospitality. Features a private grand piano, executive boardroom, infinity plunge terrace, and 24-hour private chef.',
-    amenities: [
-      'High-speed Wi-Fi',
-      'Ocean View',
-      'Private Jacuzzi',
-      'King Size Bed',
-      'Infinity Pool Access',
-      'Espresso Machine',
-      'Marble Bathroom',
-    ],
-  },
-  {
-    id: 'room-402',
-    roomNumber: '402',
-    roomType: 'Standard King Room',
-    pricePerNight: 5200,
-    capacity: 2,
-    floorNumber: 4,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[4].url,
-    bedType: 'King Size Bed',
-    roomSize: '38 m² / 409 sq ft',
-    description:
-      'High-floor standard room offering skyline vistas, hypoallergenic duvets, Nespresso station, and curated mini library.',
-    amenities: ['High-speed Wi-Fi', 'King Size Bed', 'Smart 4K TV', 'Climate Control'],
-  },
-  {
-    id: 'room-501',
-    roomNumber: '501',
-    roomType: 'Luxury Garden Villa',
-    pricePerNight: 28500,
-    capacity: 5,
-    floorNumber: 5,
-    availabilityStatus: 'Occupied',
-    roomImage: PRESET_ROOM_IMAGES[5].url,
-    bedType: 'Two King Beds',
-    roomSize: '120 m² / 1291 sq ft',
-    description:
-      'Secluded garden sanctuary with a private botanical courtyard, open-air stone bath, sun loungers, and private driveway access.',
-    amenities: [
-      'High-speed Wi-Fi',
-      'Private Jacuzzi',
-      'Balcony / Terrace',
-      'King Size Bed',
-      '24/7 Room Service',
-    ],
-  },
-  {
-    id: 'room-502',
-    roomNumber: '502',
-    roomType: 'Deluxe King Suite',
-    pricePerNight: 8900,
-    capacity: 2,
-    floorNumber: 5,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[1].url,
-    bedType: 'King Size Bed',
-    roomSize: '52 m² / 560 sq ft',
-    description:
-      'High-tier suite with private sunset deck, bespoke timber furnishings, deep soaking tub, and high-fidelity sound bar.',
-    amenities: ['High-speed Wi-Fi', 'Balcony / Terrace', 'King Size Bed', 'Smart 4K TV'],
-  },
-  {
-    id: 'room-601',
-    roomNumber: '601',
-    roomType: 'Penthouse Ocean Suite',
-    pricePerNight: 26000,
-    capacity: 3,
-    floorNumber: 6,
-    availabilityStatus: 'Available',
-    roomImage: PRESET_ROOM_IMAGES[0].url,
-    bedType: 'California King Bed',
-    roomSize: '98 m² / 1054 sq ft',
-    description:
-      'Top-floor penthouse with unobstructed 180-degree ocean panoramas, private rooftop bar, hot tub, and priority resort privileges.',
-    amenities: [
-      'High-speed Wi-Fi',
-      'Ocean View',
-      'Private Jacuzzi',
-      'King Size Bed',
-      'Infinity Pool Access',
-    ],
-  },
-  {
-    id: 'room-602',
-    roomNumber: '602',
-    roomType: 'Standard King Room',
-    pricePerNight: 5500,
-    capacity: 2,
-    floorNumber: 6,
-    availabilityStatus: 'Under Maintenance',
-    roomImage: PRESET_ROOM_IMAGES[4].url,
-    bedType: 'King Size Bed',
-    roomSize: '40 m² / 430 sq ft',
-    description:
-      'Tranquil high-floor suite undergoing scheduled luxury upholstery upgrade. Available for upcoming advance reservations.',
-    amenities: ['High-speed Wi-Fi', 'Smart 4K TV', 'Climate Control'],
-  },
-]
-
 /**
- * Initialize storage with default rooms
+ * Clean up any legacy hardcoded mock storage
  */
-function initRoomsStorage() {
-  const existing = localStorage.getItem(ROOMS_STORAGE_KEY)
-  if (!existing) {
-    localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(INITIAL_ROOMS))
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('hbms_rooms')
+  } catch (e) {
+    console.error(e)
   }
 }
 
 /**
- * Fetch all rooms (Makes real Axios request to third-party API + syncs with local storage)
+ * Retrieve user mutation delta (created, edited, deleted items)
+ */
+function getMutations() {
+  try {
+    const raw = localStorage.getItem(MUTATIONS_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : { created: [], edited: {}, deleted: [] }
+  } catch {
+    return { created: [], edited: {}, deleted: [] }
+  }
+}
+
+/**
+ * Save user mutation delta
+ */
+function saveMutations(mutations) {
+  try {
+    localStorage.setItem(MUTATIONS_STORAGE_KEY, JSON.stringify(mutations))
+  } catch (err) {
+    console.error('Failed to save room mutations:', err)
+  }
+}
+
+/**
+ * Transforms an incoming product object from DummyJSON API into a hotel Room model
+ */
+export function transformProductToRoom(product) {
+  const numId = Number(product.id) || 1
+  const typeIndex = (numId - 1) % ROOM_TYPES.length
+  const imgIndex = (numId - 1) % PRESET_ROOM_IMAGES.length
+  const floor = Math.floor((numId - 1) / 3) + 1
+  const roomNum = `${floor}0${((numId - 1) % 3) + 1}`
+
+  // Derive status dynamically from API stock level
+  let status = 'Available'
+  if (product.stock !== undefined) {
+    if (product.stock > 70) status = 'Available'
+    else if (product.stock > 25) status = 'Occupied'
+    else status = 'Under Maintenance'
+  }
+
+  // Derive price in Rupees (₹) based on API price
+  const basePrice = Math.round(Number(product.price || 20) * 350)
+  const price = Math.max(3500, Math.min(38000, basePrice))
+
+  // Dynamic amenities tailored to room tier
+  const amenitiesCount = 4 + (numId % 5)
+  const amenities = ALL_AMENITIES.slice(0, amenitiesCount)
+
+  return {
+    id: String(product.id),
+    apiSource: 'DummyJSON Products API',
+    roomNumber: roomNum,
+    roomType: ROOM_TYPES[typeIndex],
+    pricePerNight: price,
+    capacity: 2 + (numId % 4),
+    floorNumber: floor,
+    availabilityStatus: status,
+    roomImage: PRESET_ROOM_IMAGES[imgIndex].url,
+    thumbnail: product.thumbnail,
+    bedType: typeIndex % 2 === 0 ? 'King Size Bed' : 'Queen Double Bed',
+    roomSize: `${38 + (numId * 4)} m² / ${410 + (numId * 40)} sq ft`,
+    description:
+      product.description ||
+      'Luxurious hotel suite equipped with premium amenities, soundproofing, and panoramic vistas.',
+    amenities: amenities,
+    rating: product.rating,
+    stock: product.stock,
+  }
+}
+
+/**
+ * Fetch all rooms directly from DummyJSON Third-Party REST API via Axios
  */
 export async function apiFetchRooms() {
-  initRoomsStorage()
+  // Real live Axios call to DummyJSON Third-Party API
+  const response = await axios.get(`${API_BASE_URL}?limit=12`, {
+    timeout: 10000,
+  })
 
-  try {
-    // Real Third-Party API Call via Axios to DummyJSON
-    const response = await axios.get(`${API_BASE_URL}?limit=12`, {
+  if (!response.data || !Array.isArray(response.data.products)) {
+    throw new Error('Invalid response structure from Third-Party API.')
+  }
+
+  const mutations = getMutations()
+
+  // Transform raw API products dynamically into Hotel Rooms
+  let rooms = response.data.products.map(transformProductToRoom)
+
+  // Filter out any rooms deleted by user
+  if (mutations.deleted.length > 0) {
+    rooms = rooms.filter((r) => !mutations.deleted.includes(String(r.id)))
+  }
+
+  // Overlay user edits on API records
+  rooms = rooms.map((r) => {
+    if (mutations.edited[r.id]) {
+      return { ...r, ...mutations.edited[r.id] }
+    }
+    return r
+  })
+
+  // Prepend newly user-created rooms
+  if (mutations.created.length > 0) {
+    rooms = [...mutations.created, ...rooms]
+  }
+
+  return rooms
+}
+
+/**
+ * Get room by ID (Calls Axios GET to DummyJSON for API products)
+ */
+export async function apiGetRoomById(id) {
+  const mutations = getMutations()
+
+  // Check if newly created room in mutations
+  const createdMatch = mutations.created.find((r) => String(r.id) === String(id))
+  if (createdMatch) {
+    return createdMatch
+  }
+
+  // Fetch directly from DummyJSON API via Axios
+  const numericId = !isNaN(Number(id)) ? Number(id) : null
+  if (numericId) {
+    const response = await axios.get(`${API_BASE_URL}/${numericId}`, {
       timeout: 8000,
     })
 
-    // Read stored rooms
-    const stored = localStorage.getItem(ROOMS_STORAGE_KEY)
-    let rooms = stored ? JSON.parse(stored) : INITIAL_ROOMS
-
-    // If API responded with products, we correlate them to ensure live API communication
-    if (response.data && response.data.products) {
-      console.log(`[Third-Party API] Connected to DummyJSON. Fetched ${response.data.products.length} items.`)
+    if (!response.data || !response.data.id) {
+      throw new Error(`Room with ID "${id}" was not found on the remote API.`)
     }
 
-    return rooms
-  } catch (error) {
-    console.warn('[Third-Party API] Network error, falling back to cached LocalStorage:', error.message)
-    const stored = localStorage.getItem(ROOMS_STORAGE_KEY)
-    return stored ? JSON.parse(stored) : INITIAL_ROOMS
+    const room = transformProductToRoom(response.data)
+
+    // Check if edited
+    if (mutations.edited[id]) {
+      return { ...room, ...mutations.edited[id] }
+    }
+
+    return room
   }
+
+  throw new Error(`Room with ID "${id}" was not found.`)
 }
 
 /**
- * Get room by ID
- */
-export async function apiGetRoomById(id) {
-  initRoomsStorage()
-  const stored = localStorage.getItem(ROOMS_STORAGE_KEY)
-  const rooms = stored ? JSON.parse(stored) : INITIAL_ROOMS
-  const room = rooms.find((r) => String(r.id) === String(id))
-
-  if (!room) {
-    throw new Error(`Room with ID "${id}" was not found.`)
-  }
-
-  return room
-}
-
-/**
- * Add a new room (Calls Axios POST to DummyJSON + persists in Local Storage)
+ * Add a new room (Fires live Axios POST to DummyJSON API)
  */
 export async function apiCreateRoom(roomData) {
-  initRoomsStorage()
-  const stored = localStorage.getItem(ROOMS_STORAGE_KEY)
-  const rooms = stored ? JSON.parse(stored) : INITIAL_ROOMS
-
-  // Check unique room number
-  const exists = rooms.some(
-    (r) => r.roomNumber.trim().toLowerCase() === roomData.roomNumber.trim().toLowerCase()
+  // Live Axios POST request to Third-Party DummyJSON API
+  const response = await axios.post(
+    `${API_BASE_URL}/add`,
+    {
+      title: `${roomData.roomType} #${roomData.roomNumber}`,
+      price: Math.round(Number(roomData.pricePerNight) / 350) || 50,
+      description: roomData.description,
+    },
+    {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 8000,
+    }
   )
-  if (exists) {
-    throw new Error(`Room Number "${roomData.roomNumber}" already exists!`)
-  }
 
-  // Real Axios POST to DummyJSON
-  try {
-    await axios.post(
-      `${API_BASE_URL}/add`,
-      {
-        title: `${roomData.roomType} #${roomData.roomNumber}`,
-        price: roomData.pricePerNight,
-      },
-      { timeout: 8000 }
-    )
-  } catch (err) {
-    console.warn('[Third-Party API] POST simulation fallback:', err.message)
-  }
+  const serverAssignedId = response.data?.id ? String(response.data.id) : String(Date.now())
 
   const newRoom = {
     ...roomData,
-    id: 'room-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6),
+    id: serverAssignedId,
+    apiSource: 'DummyJSON POST /products/add',
     pricePerNight: Number(roomData.pricePerNight),
     capacity: Number(roomData.capacity),
     floorNumber: Number(roomData.floorNumber),
     createdAt: new Date().toISOString(),
   }
 
-  const updatedRooms = [newRoom, ...rooms]
-  localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(updatedRooms))
+  const mutations = getMutations()
+  mutations.created = [newRoom, ...mutations.created]
+  saveMutations(mutations)
+
   return newRoom
 }
 
 /**
- * Update an existing room (Calls Axios PUT to DummyJSON + updates Local Storage)
+ * Update an existing room (Fires live Axios PUT to DummyJSON API)
  */
 export async function apiUpdateRoom(id, updatedData) {
-  initRoomsStorage()
-  const stored = localStorage.getItem(ROOMS_STORAGE_KEY)
-  const rooms = stored ? JSON.parse(stored) : INITIAL_ROOMS
+  const numericId = !isNaN(Number(id)) ? Number(id) : 1
 
-  const index = rooms.findIndex((r) => String(r.id) === String(id))
-  if (index === -1) {
-    throw new Error(`Room with ID "${id}" does not exist.`)
-  }
-
-  // Check if roomNumber collision with another room
-  if (updatedData.roomNumber) {
-    const collision = rooms.some(
-      (r, idx) =>
-        idx !== index &&
-        r.roomNumber.trim().toLowerCase() === updatedData.roomNumber.trim().toLowerCase()
-    )
-    if (collision) {
-      throw new Error(`Another room already has Room Number "${updatedData.roomNumber}".`)
+  // Live Axios PUT request to Third-Party DummyJSON API
+  await axios.put(
+    `${API_BASE_URL}/${numericId}`,
+    {
+      title: `${updatedData.roomType || 'Room'} #${updatedData.roomNumber || ''}`,
+      price: Math.round(Number(updatedData.pricePerNight || 8500) / 350) || 50,
+    },
+    {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 8000,
     }
+  )
+
+  const mutations = getMutations()
+
+  // Check if updating a user-created room
+  const createdIndex = mutations.created.findIndex((r) => String(r.id) === String(id))
+  if (createdIndex !== -1) {
+    const updated = {
+      ...mutations.created[createdIndex],
+      ...updatedData,
+      pricePerNight: Number(updatedData.pricePerNight || mutations.created[createdIndex].pricePerNight),
+      capacity: Number(updatedData.capacity || mutations.created[createdIndex].capacity),
+      floorNumber: Number(updatedData.floorNumber || mutations.created[createdIndex].floorNumber),
+      updatedAt: new Date().toISOString(),
+    }
+    mutations.created[createdIndex] = updated
+    saveMutations(mutations)
+    return updated
   }
 
-  // Real Axios PUT to DummyJSON
-  try {
-    // Extract integer id if numeric, or default to product 1
-    const apiId = !isNaN(Number(id)) ? Number(id) : 1
-    await axios.put(
-      `${API_BASE_URL}/${apiId}`,
-      {
-        title: `${updatedData.roomType || rooms[index].roomType} #${updatedData.roomNumber || rooms[index].roomNumber}`,
-        price: updatedData.pricePerNight || rooms[index].pricePerNight,
-      },
-      { timeout: 8000 }
-    )
-  } catch (err) {
-    console.warn('[Third-Party API] PUT simulation fallback:', err.message)
-  }
-
-  const mergedRoom = {
-    ...rooms[index],
+  // Otherwise record edit for API room
+  mutations.edited[id] = {
+    ...(mutations.edited[id] || {}),
     ...updatedData,
-    pricePerNight: Number(updatedData.pricePerNight || rooms[index].pricePerNight),
-    capacity: Number(updatedData.capacity || rooms[index].capacity),
-    floorNumber: Number(updatedData.floorNumber || rooms[index].floorNumber),
+    pricePerNight: Number(updatedData.pricePerNight),
+    capacity: Number(updatedData.capacity),
+    floorNumber: Number(updatedData.floorNumber),
     updatedAt: new Date().toISOString(),
   }
+  saveMutations(mutations)
 
-  rooms[index] = mergedRoom
-  localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(rooms))
-  return mergedRoom
+  // Return merged object
+  const baseRoom = await apiGetRoomById(id)
+  return { ...baseRoom, ...updatedData }
 }
 
 /**
- * Delete a room (Calls Axios DELETE to DummyJSON + removes from Local Storage)
+ * Delete a room (Fires live Axios DELETE to DummyJSON API)
  */
 export async function apiDeleteRoom(id) {
-  initRoomsStorage()
-  const stored = localStorage.getItem(ROOMS_STORAGE_KEY)
-  const rooms = stored ? JSON.parse(stored) : INITIAL_ROOMS
+  const numericId = !isNaN(Number(id)) ? Number(id) : 1
 
-  const index = rooms.findIndex((r) => String(r.id) === String(id))
-  if (index === -1) {
-    throw new Error(`Room with ID "${id}" does not exist.`)
+  // Live Axios DELETE request to Third-Party DummyJSON API
+  await axios.delete(`${API_BASE_URL}/${numericId}`, {
+    timeout: 8000,
+  })
+
+  const mutations = getMutations()
+
+  // If in created list, remove
+  mutations.created = mutations.created.filter((r) => String(r.id) !== String(id))
+
+  // Add to deleted list
+  if (!mutations.deleted.includes(String(id))) {
+    mutations.deleted.push(String(id))
   }
 
-  // Real Axios DELETE to DummyJSON
-  try {
-    const apiId = !isNaN(Number(id)) ? Number(id) : 1
-    await axios.delete(`${API_BASE_URL}/${apiId}`, { timeout: 8000 })
-  } catch (err) {
-    console.warn('[Third-Party API] DELETE simulation fallback:', err.message)
-  }
+  // Remove any edits
+  delete mutations.edited[id]
 
-  const filtered = rooms.filter((r) => String(r.id) !== String(id))
-  localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(filtered))
+  saveMutations(mutations)
   return true
 }

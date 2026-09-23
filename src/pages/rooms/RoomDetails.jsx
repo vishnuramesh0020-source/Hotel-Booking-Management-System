@@ -120,7 +120,7 @@ export default function RoomDetails() {
     <div className="min-h-screen bg-[#fcfcf9] text-slate-800 flex flex-col font-sans">
       <Navbar />
 
-      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 py-8 max-w-7xl mx-auto space-y-6">
+      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 py-8 space-y-6">
         {/* Navigation Breadcrumb Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">

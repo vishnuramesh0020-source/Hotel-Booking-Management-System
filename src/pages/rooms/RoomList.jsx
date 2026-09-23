@@ -22,7 +22,7 @@ import RoomCard from '../../components/rooms/RoomCard'
 import RoomModal from '../../components/rooms/RoomModal'
 import DeleteConfirmModal from '../../components/rooms/DeleteConfirmModal'
 
-const ITEMS_PER_PAGE = 6
+const ITEMS_PER_PAGE = 8
 
 export default function RoomList() {
   const { rooms, isLoading, error, loadRooms, addRoom, editRoom, removeRoom } = useRooms()
@@ -163,7 +163,7 @@ export default function RoomList() {
     <div className="min-h-screen bg-[#fcfcf9] text-slate-800 flex flex-col font-sans">
       <Navbar />
 
-      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 py-8 max-w-7xl mx-auto space-y-8">
+      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 py-8 space-y-8">
         {/* Top Header & Page Title */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -172,7 +172,7 @@ export default function RoomList() {
                 Room Management
               </span>
               <span className="text-xs text-slate-400">•</span>
-              <span className="text-xs text-slate-500 font-medium">DummyJSON API & Live Storage</span>
+              <span className="text-xs text-slate-500 font-medium">Live Third-Party API (DummyJSON)</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
               Hotel Rooms & Suites
@@ -343,8 +343,8 @@ export default function RoomList() {
 
         {/* Loading Skeletons */}
         {isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
               <div
                 key={i}
                 className="bg-white rounded-3xl overflow-hidden border border-slate-200 animate-pulse space-y-4 p-4"
@@ -411,7 +411,7 @@ export default function RoomList() {
         {/* Room Grid */}
         {!isLoading && !error && filteredRooms.length > 0 && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {paginatedRooms.map((room) => (
                 <RoomCard
                   key={room.id}
