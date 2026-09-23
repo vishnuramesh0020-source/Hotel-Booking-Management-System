@@ -1,5 +1,5 @@
-import { LogOut } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { LogOut, LayoutDashboard, BedDouble } from 'lucide-react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
 import HotelookLogo from './HotelookLogo'
@@ -29,10 +29,45 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs">
       <div className="w-full px-4 sm:px-8 lg:px-12 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <HotelookLogo size="md" />
-        </Link>
+        {/* Brand Logo & Nav */}
+        <div className="flex items-center gap-8">
+          <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <HotelookLogo size="md" />
+          </Link>
+
+          {/* Navigation Links */}
+          {user && (
+            <nav className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-full border border-slate-200/60">
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span>Dashboard</span>
+              </NavLink>
+
+              <NavLink
+                to="/rooms"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <BedDouble className="w-3.5 h-3.5" />
+                <span>Rooms</span>
+              </NavLink>
+            </nav>
+          )}
+        </div>
 
         {/* User Profile & Actions */}
         <div className="flex items-center gap-4">
@@ -65,7 +100,7 @@ export default function Navbar() {
                 title="Log out of system"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span>Logout</span>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           )}
