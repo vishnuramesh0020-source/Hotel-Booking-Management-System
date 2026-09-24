@@ -3,6 +3,10 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { AuthProvider } from './context/AuthContext'
+<<<<<<< HEAD
+=======
+import { RoomProvider } from './context/RoomContext'
+>>>>>>> a0439d709e3b588c80bd89b5b78028de9b43b116
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import PublicRoute from './components/routes/PublicRoute'
 
@@ -10,10 +14,16 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import Dashboard from './pages/dashboard/Dashboard'
+<<<<<<< HEAD
+=======
+import RoomList from './pages/rooms/RoomList'
+import RoomDetails from './pages/rooms/RoomDetails'
+>>>>>>> a0439d709e3b588c80bd89b5b78028de9b43b116
 
 export default function App() {
   return (
     <AuthProvider>
+<<<<<<< HEAD
       <Router>
         <Routes>
           {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
@@ -71,6 +81,83 @@ export default function App() {
           theme="dark"
         />
       </Router>
+=======
+      <RoomProvider>
+        <Router>
+          <Routes>
+            {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <ForgotPassword />
+                </PublicRoute>
+              }
+            />
+
+            {/* Protected Area (Requires authenticated session) */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms"
+              element={
+                <ProtectedRoute>
+                  <RoomList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms/:id"
+              element={
+                <ProtectedRoute>
+                  <RoomDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Default Redirections */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+
+          {/* Global Toast Notifications */}
+          <ToastContainer
+            position="top-right"
+            autoClose={3500}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        </Router>
+      </RoomProvider>
+>>>>>>> a0439d709e3b588c80bd89b5b78028de9b43b116
     </AuthProvider>
   )
 }
