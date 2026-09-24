@@ -24,6 +24,11 @@ const INITIAL_BOOKINGS = [
     tax: 4080,
     totalAmount: 38080,
     status: 'Checked-In',
+    actualCheckIn: '2026-09-24T10:30:00.000Z',
+    keycardNumber: 'KC-101',
+    idVerified: true,
+    checkedInBy: 'David Miller (Front Desk)',
+    checkInNotes: 'Guest requested extra keycard and morning newspaper',
     specialRequests: 'High floor, complimentary morning espresso',
     createdAt: '2026-09-20T10:30:00.000Z',
   },
@@ -68,6 +73,18 @@ const INITIAL_BOOKINGS = [
     tax: 5880,
     totalAmount: 54880,
     status: 'Checked-Out',
+    actualCheckIn: '2026-09-22T14:15:00.000Z',
+    actualCheckOut: '2026-09-24T11:00:00.000Z',
+    keycardNumber: 'KC-201',
+    idVerified: true,
+    keycardReturned: true,
+    roomCondition: 'Good',
+    extraCharges: 1200,
+    finalBilledAmount: 56080,
+    checkedInBy: 'David Miller (Front Desk)',
+    checkedOutBy: 'Sarah Connor (Front Desk)',
+    checkOutNotes: 'Mini-bar beverages billed (₹1,200). Keycard returned in good order.',
+    paymentSettled: true,
     specialRequests: 'Airport transfer required',
     createdAt: '2026-09-19T09:00:00.000Z',
   },
@@ -163,6 +180,79 @@ export function calculateBookingFinancials(pricePerNight, checkIn, checkOut) {
     subtotal,
     tax,
     totalAmount,
+  }
+}
+
+/**
+ * Calculate stay duration, elapsed nights, remaining nights, progress, and overstay status
+ */
+export function calculateStayDuration(
+  checkIn,
+  checkOut,
+  actualCheckIn = null,
+  actualCheckOut = null,
+  status = 'Confirmed'
+) {
+  const start = new Date(checkIn)
+  const end = new Date(checkOut)
+  const totalNights = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)))
+  const totalDays = totalNights + 1
+
+  const now = new Date()
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const endMidnight = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime()
+  const startMidnight = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime()
+
+  let elapsedNights = 0
+  if (status === 'Checked-Out' && actualCheckIn && actualCheckOut) {
+    elapsedNights = Math.max(1, Math.round((new Date(actualCheckOut) - new Date(actualCheckIn)) / 86400000))
+  } else if (status === 'Checked-In') {
+    const effectiveStart = actualCheckIn ? new Date(actualCheckIn).getTime() : startMidnight
+    const elapsedMs = Math.max(0, now.getTime() - effectiveStart)
+    elapsedNights = Math.max(1, Math.ceil(elapsedMs / 86400000))
+  }
+
+  const isOverstay = status === 'Checked-In' && todayMidnight > endMidnight
+  const overstayDays = isOverstay ? Math.floor((todayMidnight - endMidnight) / 86400000) : 0
+
+  let progressPercent = 0
+  if (status === 'Checked-Out') {
+    progressPercent = 100
+  } else if (status === 'Checked-In') {
+    progressPercent = Math.min(100, Math.max(15, Math.round((elapsedNights / totalNights) * 100)))
+  } else if (status === 'Confirmed') {
+    progressPercent = 0
+  }
+
+  let badgeText = `${totalNights} Nights`
+  let displayText = `${totalNights} Nights (${totalDays} Days)`
+
+  if (status === 'Checked-In') {
+    if (isOverstay) {
+      displayText = `Overstay Alert: ${overstayDays} ${overstayDays === 1 ? 'day' : 'days'} overdue!`
+      badgeText = `Overdue +${overstayDays}d`
+    } else {
+      displayText = `Active Stay: Day ${Math.min(totalNights, elapsedNights)} of ${totalNights} Nights`
+      badgeText = `Day ${Math.min(totalNights, elapsedNights)}/${totalNights}`
+    }
+  } else if (status === 'Checked-Out') {
+    displayText = `Stay Completed: ${totalNights} Nights`
+    badgeText = `Completed`
+  } else if (status === 'Cancelled') {
+    displayText = `Reservation Cancelled`
+    badgeText = `Cancelled`
+  }
+
+  return {
+    totalNights,
+    totalDays,
+    elapsedNights,
+    remainingNights: Math.max(0, totalNights - elapsedNights),
+    isOverstay,
+    overstayDays,
+    progressPercent,
+    displayText,
+    badgeText,
   }
 }
 
@@ -278,4 +368,87 @@ export async function apiUpdateBookingStatus(id, newStatus) {
  */
 export async function apiCancelBooking(id) {
   return apiUpdateBookingStatus(id, 'Cancelled')
+}
+
+/**
+ * Check-In a guest
+ */
+export async function apiCheckInGuest(id, checkInData = {}) {
+  initBookingsStorage()
+  const stored = localStorage.getItem(BOOKINGS_STORAGE_KEY)
+  const bookings = stored ? JSON.parse(stored) : INITIAL_BOOKINGS
+
+  const index = bookings.findIndex((b) => String(b.id) === String(id))
+  if (index === -1) {
+    throw new Error(`Booking with reference "${id}" was not found.`)
+  }
+
+  // Live Axios PUT to DummyJSON
+  try {
+    await axios.put(`${API_BASE_URL}/1`, { merge: true }, { timeout: 8000 })
+  } catch (err) {
+    console.warn('[Third-Party API] Cart PUT simulation:', err.message)
+  }
+
+  const now = new Date().toISOString()
+  const keycardNumber =
+    checkInData.keycardNumber ||
+    `KC-${bookings[index].roomNumber || Math.floor(100 + Math.random() * 900)}`
+
+  bookings[index] = {
+    ...bookings[index],
+    status: 'Checked-In',
+    actualCheckIn: checkInData.actualCheckIn || now,
+    keycardNumber,
+    idVerified: checkInData.idVerified ?? true,
+    checkInNotes: checkInData.notes || '',
+    checkedInBy: checkInData.checkedInBy || 'Front Desk Staff',
+    updatedAt: now,
+  }
+
+  localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(bookings))
+  return bookings[index]
+}
+
+/**
+ * Check-Out a guest
+ */
+export async function apiCheckOutGuest(id, checkOutData = {}) {
+  initBookingsStorage()
+  const stored = localStorage.getItem(BOOKINGS_STORAGE_KEY)
+  const bookings = stored ? JSON.parse(stored) : INITIAL_BOOKINGS
+
+  const index = bookings.findIndex((b) => String(b.id) === String(id))
+  if (index === -1) {
+    throw new Error(`Booking with reference "${id}" was not found.`)
+  }
+
+  // Live Axios PUT to DummyJSON
+  try {
+    await axios.put(`${API_BASE_URL}/1`, { merge: true }, { timeout: 8000 })
+  } catch (err) {
+    console.warn('[Third-Party API] Cart PUT simulation:', err.message)
+  }
+
+  const now = new Date().toISOString()
+  const extraCharges = Number(checkOutData.extraCharges || 0)
+  const baseAmount = Number(bookings[index].totalAmount || 0)
+  const finalBilledAmount = baseAmount + extraCharges
+
+  bookings[index] = {
+    ...bookings[index],
+    status: 'Checked-Out',
+    actualCheckOut: checkOutData.actualCheckOut || now,
+    keycardReturned: checkOutData.keycardReturned ?? true,
+    roomCondition: checkOutData.roomCondition || 'Good',
+    extraCharges,
+    finalBilledAmount,
+    checkOutNotes: checkOutData.notes || '',
+    checkedOutBy: checkOutData.checkedOutBy || 'Front Desk Staff',
+    paymentSettled: true,
+    updatedAt: now,
+  }
+
+  localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(bookings))
+  return bookings[index]
 }

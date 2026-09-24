@@ -17,10 +17,12 @@ import {
 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { useBookings } from '../../context/BookingContext'
+import { useRooms } from '../../context/RoomContext'
 import HotelookLogo from '../layout/HotelookLogo'
 
 export default function BookingDetailsModal({ isOpen, onClose, booking }) {
   const { updateStatus } = useBookings()
+  const { updateRoomAvailability } = useRooms()
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
 
   if (!isOpen || !booking) return null
@@ -30,6 +32,13 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }) {
     setIsUpdatingStatus(true)
     try {
       await updateStatus(booking.id, newStatus)
+      if (booking.roomId && updateRoomAvailability) {
+        if (newStatus === 'Checked-In') {
+          await updateRoomAvailability(booking.roomId, 'Occupied')
+        } else if (newStatus === 'Checked-Out' || newStatus === 'Cancelled') {
+          await updateRoomAvailability(booking.roomId, 'Available')
+        }
+      }
       toast.success(`Booking status changed to ${newStatus}`)
     } catch (err) {
       toast.error(err.message || 'Failed to update status.')
@@ -246,6 +255,29 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }) {
               </div>
             </div>
 
+            {booking.keycardNumber && (
+              <div className="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium">Assigned Keycard RFID:</span>
+                <span className="font-mono font-bold text-[#1b4332] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {booking.keycardNumber}
+                </span>
+              </div>
+            )}
+
+            {booking.actualCheckIn && (
+              <div className="mt-2 text-[11px] text-slate-500">
+                <span>Actual Check-In: {new Date(booking.actualCheckIn).toLocaleString()}</span>
+                {booking.checkedInBy && <span> (Handled by {booking.checkedInBy})</span>}
+              </div>
+            )}
+
+            {booking.actualCheckOut && (
+              <div className="mt-1 text-[11px] text-slate-500">
+                <span>Actual Check-Out: {new Date(booking.actualCheckOut).toLocaleString()}</span>
+                {booking.checkedOutBy && <span> (Handled by {booking.checkedOutBy})</span>}
+              </div>
+            )}
+
             {booking.specialRequests && (
               <div className="mt-3 pt-3 border-t border-slate-200/60 text-xs text-slate-600">
                 <strong className="text-slate-800">Special Notes:</strong> {booking.specialRequests}
@@ -276,13 +308,22 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }) {
               </span>
             </div>
 
+            {Number(booking.extraCharges || 0) > 0 && (
+              <div className="flex items-center justify-between text-xs text-slate-600">
+                <span>Incidentals & Service Additions</span>
+                <span className="font-bold text-amber-700 font-mono">
+                  + ₹{Number(booking.extraCharges).toLocaleString()}
+                </span>
+              </div>
+            )}
+
             <div className="pt-2.5 border-t border-slate-200 flex items-center justify-between">
               <div>
                 <span className="text-sm font-bold text-slate-900 block">Total Amount Paid / Due</span>
                 <span className="text-[10px] text-slate-400">All applicable taxes included</span>
               </div>
               <span className="text-2xl font-black text-[#1b4332] font-mono">
-                ₹{Number(booking.totalAmount).toLocaleString()}
+                ₹{Number(booking.finalBilledAmount || booking.totalAmount).toLocaleString()}
               </span>
             </div>
           </div>

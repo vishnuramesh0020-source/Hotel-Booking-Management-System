@@ -1,4 +1,4 @@
-import { LogOut, LayoutDashboard, BedDouble, Users, Calendar } from 'lucide-react'
+import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
@@ -92,6 +92,20 @@ export default function Navbar() {
               >
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Bookings</span>
+              </NavLink>
+
+              <NavLink
+                to="/checkin-checkout"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Check-In/Out</span>
               </NavLink>
             </nav>
           )}

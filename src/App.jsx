@@ -18,6 +18,7 @@ import RoomDetails from './pages/rooms/RoomDetails'
 import GuestList from './pages/guests/GuestList'
 import GuestProfile from './pages/guests/GuestProfile'
 import BookingList from './pages/bookings/BookingList'
+import CheckInOutHub from './pages/checkin/CheckInOutHub'
 
 export default function App() {
   return (
@@ -99,6 +100,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <BookingList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkin-checkout"
+                element={
+                  <ProtectedRoute>
+                    <CheckInOutHub />
                   </ProtectedRoute>
                 }
               />

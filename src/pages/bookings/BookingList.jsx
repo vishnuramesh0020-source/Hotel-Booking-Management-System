@@ -14,13 +14,17 @@ import {
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
+  UserCheck,
 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { useBookings } from '../../context/BookingContext'
+import { calculateStayDuration } from '../../services/bookingApi'
 import Navbar from '../../components/layout/Navbar'
 import NewBookingModal from '../../components/bookings/NewBookingModal'
 import BookingDetailsModal from '../../components/bookings/BookingDetailsModal'
 import CancelBookingModal from '../../components/bookings/CancelBookingModal'
+import CheckInModal from '../../components/checkin/CheckInModal'
+import CheckOutModal from '../../components/checkin/CheckOutModal'
 
 const ITEMS_PER_PAGE = 8
 
@@ -37,6 +41,8 @@ export default function BookingList() {
   const [isNewBookingOpen, setIsNewBookingOpen] = useState(false)
   const [selectedBookingForDetails, setSelectedBookingForDetails] = useState(null)
   const [bookingToCancel, setBookingToCancel] = useState(null)
+  const [bookingForCheckIn, setBookingForCheckIn] = useState(null)
+  const [bookingForCheckOut, setBookingForCheckOut] = useState(null)
 
   // Summary Metrics
   const stats = useMemo(() => {
@@ -449,20 +455,39 @@ export default function BookingList() {
 
                           {/* Dates & Nights */}
                           <td className="py-4 px-6">
-                            <div className="space-y-0.5">
-                              <p className="text-xs font-semibold text-slate-800">
-                                {b.checkIn} → {b.checkOut}
-                              </p>
-                              <span className="inline-block text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                                {b.nights} {b.nights === 1 ? 'Night' : 'Nights'}
-                              </span>
-                            </div>
+                            {(() => {
+                              const stayInfo = calculateStayDuration(
+                                b.checkIn,
+                                b.checkOut,
+                                b.actualCheckIn,
+                                b.actualCheckOut,
+                                b.status
+                              )
+                              return (
+                                <div className="space-y-1">
+                                  <p className="text-xs font-semibold text-slate-800">
+                                    {b.checkIn} → {b.checkOut}
+                                  </p>
+                                  <span
+                                    className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                      stayInfo.isOverstay
+                                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                                        : b.status === 'Checked-In'
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : 'bg-slate-100 text-slate-600'
+                                    }`}
+                                  >
+                                    {stayInfo.displayText}
+                                  </span>
+                                </div>
+                              )
+                            })()}
                           </td>
 
                           {/* Total Amount in ₹ */}
                           <td className="py-4 px-6">
                             <p className="font-extrabold text-sm text-[#1b4332] font-mono">
-                              ₹{Number(b.totalAmount).toLocaleString()}
+                              ₹{Number(b.finalBilledAmount || b.totalAmount).toLocaleString()}
                             </p>
                             <p className="text-[10px] text-slate-400 font-medium">Incl. 12% GST</p>
                           </td>
@@ -480,6 +505,30 @@ export default function BookingList() {
                           {/* Action Buttons */}
                           <td className="py-4 px-6 text-right">
                             <div className="flex items-center justify-end gap-1.5">
+                              {/* Quick Check-In Button */}
+                              {b.status === 'Confirmed' && (
+                                <button
+                                  onClick={() => setBookingForCheckIn(b)}
+                                  type="button"
+                                  className="p-2 rounded-full text-amber-600 hover:text-amber-800 hover:bg-amber-50 transition cursor-pointer"
+                                  title="Process Check-In"
+                                >
+                                  <UserCheck className="w-4 h-4" />
+                                </button>
+                              )}
+
+                              {/* Quick Check-Out Button */}
+                              {b.status === 'Checked-In' && (
+                                <button
+                                  onClick={() => setBookingForCheckOut(b)}
+                                  type="button"
+                                  className="p-2 rounded-full text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 transition cursor-pointer"
+                                  title="Process Check-Out"
+                                >
+                                  <LogOut className="w-4 h-4" />
+                                </button>
+                              )}
+
                               <button
                                 onClick={() => setSelectedBookingForDetails(b)}
                                 type="button"
@@ -489,7 +538,7 @@ export default function BookingList() {
                                 <Eye className="w-4 h-4" />
                               </button>
 
-                              {b.status !== 'Cancelled' && (
+                              {b.status !== 'Cancelled' && b.status !== 'Checked-Out' && (
                                 <button
                                   onClick={() => setBookingToCancel(b)}
                                   type="button"
@@ -582,6 +631,24 @@ export default function BookingList() {
         onConfirm={handleConfirmCancel}
         booking={bookingToCancel}
       />
+
+      {/* Check-In Modal */}
+      {bookingForCheckIn && (
+        <CheckInModal
+          isOpen={Boolean(bookingForCheckIn)}
+          booking={bookingForCheckIn}
+          onClose={() => setBookingForCheckIn(null)}
+        />
+      )}
+
+      {/* Check-Out Modal */}
+      {bookingForCheckOut && (
+        <CheckOutModal
+          isOpen={Boolean(bookingForCheckOut)}
+          booking={bookingForCheckOut}
+          onClose={() => setBookingForCheckOut(null)}
+        />
+      )}
     </div>
   )
 }

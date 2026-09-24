@@ -4,6 +4,8 @@ import {
   apiCreateBooking,
   apiUpdateBookingStatus,
   apiCancelBooking,
+  apiCheckInGuest,
+  apiCheckOutGuest,
   checkRoomOverlap,
 } from '../services/bookingApi'
 
@@ -47,6 +49,20 @@ export function BookingProvider({ children }) {
     return updated
   }
 
+  // Process Guest Check-In
+  const checkInGuest = async (id, checkInData) => {
+    const updated = await apiCheckInGuest(id, checkInData)
+    setBookings((prev) => prev.map((b) => (String(b.id) === String(id) ? updated : b)))
+    return updated
+  }
+
+  // Process Guest Check-Out
+  const checkOutGuest = async (id, checkOutData) => {
+    const updated = await apiCheckOutGuest(id, checkOutData)
+    setBookings((prev) => prev.map((b) => (String(b.id) === String(id) ? updated : b)))
+    return updated
+  }
+
   // Cancel reservation
   const cancel = async (id) => {
     const updated = await apiCancelBooking(id)
@@ -66,6 +82,8 @@ export function BookingProvider({ children }) {
     loadBookings,
     addBooking,
     updateStatus,
+    checkInGuest,
+    checkOutGuest,
     cancel,
     checkConflict,
   }

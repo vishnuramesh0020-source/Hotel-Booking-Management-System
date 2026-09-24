@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   CalendarDays,
   Search,
@@ -10,10 +10,16 @@ import {
 import { RECENT_BOOKINGS } from '../../services/dashboardData'
 import { toast } from 'react-toastify'
 
-export default function RecentBookings() {
-  const [bookings, setBookings] = useState(RECENT_BOOKINGS)
+export default function RecentBookings({ bookings: propBookings }) {
+  const [bookings, setBookings] = useState(propBookings || RECENT_BOOKINGS)
   const [filterTab, setFilterTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    if (propBookings && propBookings.length > 0) {
+      setBookings(propBookings)
+    }
+  }, [propBookings])
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -39,11 +45,16 @@ export default function RecentBookings() {
 
   const filteredBookings = bookings.filter((b) => {
     const matchesTab = filterTab === 'All' || b.status === filterTab
+    const guestName = b.guest?.name || b.guestName || 'Guest'
+    const roomNumber = String(b.roomNumber || '')
+    const roomType = b.roomType || ''
+    const id = String(b.id || '')
+
     const matchesSearch =
-      b.guest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.roomNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.id.toLowerCase().includes(searchQuery.toLowerCase())
+      guestName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      roomNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      roomType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      id.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesTab && matchesSearch
   })
 
@@ -121,43 +132,52 @@ export default function RecentBookings() {
                 </td>
               </tr>
             ) : (
-              filteredBookings.map((b) => (
-                <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
-                  {/* Guest Info */}
-                  <td className="py-3.5 pl-2">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-full text-white font-bold flex items-center justify-center text-xs shadow-xs ${b.guest.avatarColor}`}
-                      >
-                        {b.guest.name[0]}
+              filteredBookings.map((b) => {
+                const guestName = b.guest?.name || b.guestName || 'Guest'
+                const guestEmail = b.guest?.email || b.guestEmail || ''
+                const avatarColor = b.guest?.avatarColor || 'bg-[#1b4332]'
+                const displayAmount =
+                  b.amount || `₹${Number(b.finalBilledAmount || b.totalAmount || 0).toLocaleString()}`
+
+                return (
+                  <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
+                    {/* Guest Info */}
+                    <td className="py-3.5 pl-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-full text-white font-bold flex items-center justify-center text-xs shadow-xs ${avatarColor}`}
+                        >
+                          {guestName[0]?.toUpperCase() || 'G'}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm">{guestName}</p>
+                          <p className="text-[11px] text-slate-400">
+                            {b.id} {guestEmail ? `• ${guestEmail}` : ''}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-900 text-sm">{b.guest.name}</p>
-                        <p className="text-[11px] text-slate-400">{b.id} • {b.guest.email}</p>
-                      </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Room Details */}
-                  <td className="py-3.5">
-                    <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md text-xs mr-1.5">
-                      #{b.roomNumber}
-                    </span>
-                    <span className="text-slate-600 font-medium">{b.roomType}</span>
-                  </td>
+                    {/* Room Details */}
+                    <td className="py-3.5">
+                      <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md text-xs mr-1.5">
+                        #{b.roomNumber}
+                      </span>
+                      <span className="text-slate-600 font-medium">{b.roomType}</span>
+                    </td>
 
-                  {/* Dates */}
-                  <td className="py-3.5">
-                    <p className="text-slate-900 font-semibold">{b.checkIn}</p>
-                    <p className="text-[11px] text-slate-400">
-                      to {b.checkOut} ({b.nights} nights)
-                    </p>
-                  </td>
+                    {/* Dates */}
+                    <td className="py-3.5">
+                      <p className="text-slate-900 font-semibold">{b.checkIn}</p>
+                      <p className="text-[11px] text-slate-400">
+                        to {b.checkOut} ({b.nights || 1} nights)
+                      </p>
+                    </td>
 
-                  {/* Amount */}
-                  <td className="py-3.5">
-                    <span className="font-extrabold text-slate-900 text-sm">{b.amount}</span>
-                  </td>
+                    {/* Amount */}
+                    <td className="py-3.5">
+                      <span className="font-extrabold text-slate-900 text-sm">{displayAmount}</span>
+                    </td>
 
                   {/* Status Badge */}
                   <td className="py-3.5">
@@ -196,8 +216,9 @@ export default function RecentBookings() {
                     )}
                   </td>
                 </tr>
-              ))
-            )}
+              )
+            })
+          )}
           </tbody>
         </table>
       </div>

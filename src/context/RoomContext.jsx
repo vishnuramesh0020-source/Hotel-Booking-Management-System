@@ -62,6 +62,16 @@ export function RoomProvider({ children }) {
     return apiGetRoomById(id)
   }
 
+  // Update room availability status directly (e.g. Occupied, Available)
+  const updateRoomAvailability = async (roomId, availabilityStatus) => {
+    const room = rooms.find(
+      (r) => String(r.id) === String(roomId) || String(r.roomNumber) === String(roomId)
+    )
+    if (room) {
+      return editRoom(room.id, { ...room, availabilityStatus })
+    }
+  }
+
   const value = {
     rooms,
     isLoading,
@@ -69,6 +79,7 @@ export function RoomProvider({ children }) {
     loadRooms,
     addRoom,
     editRoom,
+    updateRoomAvailability,
     removeRoom,
     getRoom,
   }

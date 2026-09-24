@@ -292,9 +292,9 @@ export async function apiUpdateRoom(id, updatedData) {
   mutations.edited[id] = {
     ...(mutations.edited[id] || {}),
     ...updatedData,
-    pricePerNight: Number(updatedData.pricePerNight),
-    capacity: Number(updatedData.capacity),
-    floorNumber: Number(updatedData.floorNumber),
+    ...(updatedData.pricePerNight !== undefined ? { pricePerNight: Number(updatedData.pricePerNight) } : {}),
+    ...(updatedData.capacity !== undefined ? { capacity: Number(updatedData.capacity) } : {}),
+    ...(updatedData.floorNumber !== undefined ? { floorNumber: Number(updatedData.floorNumber) } : {}),
     updatedAt: new Date().toISOString(),
   }
   saveMutations(mutations)
