@@ -1,5 +1,10 @@
+<<<<<<< HEAD
+import { LogOut } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+=======
 import { LogOut, LayoutDashboard, BedDouble } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+>>>>>>> a0439d709e3b588c80bd89b5b78028de9b43b116
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
 import HotelookLogo from './HotelookLogo'
@@ -28,6 +33,13 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs">
+<<<<<<< HEAD
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Brand Logo */}
+        <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <HotelookLogo size="md" />
+        </Link>
+=======
       <div className="w-full px-4 sm:px-8 lg:px-12 h-16 flex items-center justify-between">
         {/* Brand Logo & Nav */}
         <div className="flex items-center gap-8">
@@ -68,6 +80,7 @@ export default function Navbar() {
             </nav>
           )}
         </div>
+>>>>>>> a0439d709e3b588c80bd89b5b78028de9b43b116
 
         {/* User Profile & Actions */}
         <div className="flex items-center gap-4">
@@ -100,7 +113,11 @@ export default function Navbar() {
                 title="Log out of system"
               >
                 <LogOut className="w-3.5 h-3.5" />
+<<<<<<< HEAD
+                <span>Logout</span>
+=======
                 <span className="hidden sm:inline">Logout</span>
+>>>>>>> a0439d709e3b588c80bd89b5b78028de9b43b116
               </button>
             </div>
           )}
