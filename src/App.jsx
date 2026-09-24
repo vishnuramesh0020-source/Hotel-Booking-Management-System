@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { AuthProvider } from './context/AuthContext'
 import { RoomProvider } from './context/RoomContext'
 import { GuestProvider } from './context/GuestContext'
+import { BookingProvider } from './context/BookingContext'
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import PublicRoute from './components/routes/PublicRoute'
 
@@ -16,13 +17,15 @@ import RoomList from './pages/rooms/RoomList'
 import RoomDetails from './pages/rooms/RoomDetails'
 import GuestList from './pages/guests/GuestList'
 import GuestProfile from './pages/guests/GuestProfile'
+import BookingList from './pages/bookings/BookingList'
 
 export default function App() {
   return (
     <AuthProvider>
       <RoomProvider>
         <GuestProvider>
-          <Router>
+          <BookingProvider>
+            <Router>
             <Routes>
               {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
               <Route
@@ -91,6 +94,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/bookings"
+                element={
+                  <ProtectedRoute>
+                    <BookingList />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Default Redirections */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -111,6 +122,7 @@ export default function App() {
               theme="dark"
             />
           </Router>
+          </BookingProvider>
         </GuestProvider>
       </RoomProvider>
     </AuthProvider>

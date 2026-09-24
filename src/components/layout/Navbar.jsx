@@ -1,4 +1,4 @@
-import { LogOut, LayoutDashboard, BedDouble, Users } from 'lucide-react'
+import { LogOut, LayoutDashboard, BedDouble, Users, Calendar } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
@@ -37,11 +37,11 @@ export default function Navbar() {
 
           {/* Navigation Links */}
           {user && (
-            <nav className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-full border border-slate-200/60">
+            <nav className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-full border border-slate-200/60 overflow-x-auto">
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition ${
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
                     isActive
                       ? 'bg-[#1b4332] text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -55,7 +55,7 @@ export default function Navbar() {
               <NavLink
                 to="/rooms"
                 className={({ isActive }) =>
-                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition ${
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
                     isActive
                       ? 'bg-[#1b4332] text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -69,7 +69,7 @@ export default function Navbar() {
               <NavLink
                 to="/guests"
                 className={({ isActive }) =>
-                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition ${
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
                     isActive
                       ? 'bg-[#1b4332] text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -78,6 +78,20 @@ export default function Navbar() {
               >
                 <Users className="w-3.5 h-3.5" />
                 <span>Guests</span>
+              </NavLink>
+
+              <NavLink
+                to="/bookings"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Bookings</span>
               </NavLink>
             </nav>
           )}
