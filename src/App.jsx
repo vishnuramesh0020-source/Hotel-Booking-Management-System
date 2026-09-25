@@ -2,11 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { AuthProvider } from './context/AuthContext'
-import { RoomProvider } from './context/RoomContext'
-import { GuestProvider } from './context/GuestContext'
-import { BookingProvider } from './context/BookingContext'
-import { PaymentProvider } from './context/PaymentContext'
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import PublicRoute from './components/routes/PublicRoute'
 
@@ -26,14 +21,9 @@ import ReportsHub from './pages/reports/ReportsHub'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <RoomProvider>
-        <GuestProvider>
-          <BookingProvider>
-            <PaymentProvider>
-              <Router>
-                <Routes>
-                  {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
+    <Router>
+      <Routes>
+        {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
               <Route
                 path="/login"
                 element={
@@ -145,25 +135,19 @@ export default function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
-
-            {/* Global Toast Notifications */}
-            <ToastContainer
-              position="top-right"
-              autoClose={3500}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-            />
-          </Router>
-        </PaymentProvider>
-      </BookingProvider>
-    </GuestProvider>
-  </RoomProvider>
-</AuthProvider>
-  )
-}
+        {/* Global Toast Notifications */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3500}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
+      </Router>
+    )
+  }
