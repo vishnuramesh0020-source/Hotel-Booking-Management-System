@@ -1,4 +1,4 @@
-import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound, CreditCard, History } from 'lucide-react'
+import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound, CreditCard, History, BarChart3 } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
@@ -134,6 +134,20 @@ export default function Navbar() {
               >
                 <History className="w-3.5 h-3.5" />
                 <span>History</span>
+              </NavLink>
+
+              <NavLink
+                to="/reports"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>Reports</span>
               </NavLink>
             </nav>
           )}

@@ -9,8 +9,10 @@ import {
   X,
 } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { useBookings } from '../../context/BookingContext'
 
 export default function QuickActions({ onNewBookingCreated }) {
+  const bookingCtx = useBookings()
   const [showModal, setShowModal] = useState(false)
   const [newGuestName, setNewGuestName] = useState('')
   const [newRoomType, setNewRoomType] = useState('Deluxe King Balcony')
@@ -38,28 +40,52 @@ export default function QuickActions({ onNewBookingCreated }) {
     }, 1600)
   }
 
-  const handleCreateReservation = (e) => {
+  const handleCreateReservation = async (e) => {
     e.preventDefault()
     if (!newGuestName.trim()) {
       toast.error('Please enter a guest name.')
       return
     }
 
+    const nightsNum = Number(newNights) || 1
+    const pricePerNight = 8500
+    const subtotal = nightsNum * pricePerNight
+    const tax = Math.round(subtotal * 0.12)
+    const totalAmount = subtotal + tax
+
     const newBooking = {
-      id: 'BK-' + Math.floor(1000 + Math.random() * 9000),
+      id: 'HTL-BK-' + Math.floor(1000 + Math.random() * 9000),
+      guestId: 'guest-' + Date.now(),
+      guestName: newGuestName.trim(),
+      guestEmail: `${newGuestName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+      guestPhone: '+91 98765 43210',
+      guestIdProof: 'ID-PASSPORT-2026',
       guest: {
         name: newGuestName.trim(),
         email: `${newGuestName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
         avatarColor: 'bg-emerald-700',
       },
+      roomId: 'room-' + newRoomNumber,
       roomNumber: newRoomNumber,
       roomType: newRoomType,
       checkIn: new Date().toISOString().split('T')[0],
-      checkOut: new Date(Date.now() + newNights * 86400000).toISOString().split('T')[0],
-      amount: `₹${newNights * 8500}`,
+      checkOut: new Date(Date.now() + nightsNum * 86400000).toISOString().split('T')[0],
+      pricePerNight,
+      nights: nightsNum,
+      subtotal,
+      tax,
+      totalAmount,
+      amount: `₹${totalAmount.toLocaleString()}`,
       status: 'Confirmed',
       guestsCount: 2,
-      nights: Number(newNights),
+    }
+
+    if (bookingCtx && bookingCtx.addBooking) {
+      try {
+        await bookingCtx.addBooking(newBooking)
+      } catch (err) {
+        console.error('Failed to add booking to context:', err)
+      }
     }
 
     if (onNewBookingCreated) {

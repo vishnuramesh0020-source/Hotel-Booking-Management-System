@@ -27,30 +27,82 @@ export default function Dashboard() {
 
   // Real-time computed hotel KPI metrics dynamically derived from live contexts
   const stats = useMemo(() => {
-    const totalRooms = rooms.length > 0 ? rooms.length : HOTEL_STATS.totalRooms
-    const occupiedRooms = rooms.filter((r) => r.availabilityStatus === 'Occupied').length
-    const availableRooms = rooms.filter((r) => r.availabilityStatus === 'Available').length
-    const totalGuests = guests.length > 0 ? guests.length : HOTEL_STATS.totalGuests
-    const totalBookings = bookings.length > 0 ? bookings.length : HOTEL_STATS.totalBookings
-    const todaysCheckIns = bookings.filter((b) => b.status === 'Checked-In').length
-    const todaysCheckOuts = bookings.filter((b) => b.status === 'Checked-Out').length
-    const pendingArrivals = bookings.filter((b) => b.status === 'Confirmed').length
+    const hasRooms = rooms && rooms.length > 0
+    const totalRooms = hasRooms ? rooms.length : HOTEL_STATS.totalRooms
+    const occupiedRooms = hasRooms
+      ? rooms.filter((r) => r.availabilityStatus === 'Occupied' || r.status === 'Occupied').length
+      : HOTEL_STATS.occupiedRooms
+    const availableRooms = hasRooms
+      ? rooms.filter((r) => r.availabilityStatus === 'Available' || r.status === 'Available').length
+      : HOTEL_STATS.availableRooms
+    const totalGuests = guests && guests.length > 0 ? guests.length : HOTEL_STATS.totalGuests
+
+    const hasBookings = bookings && bookings.length > 0
+    const totalBookings = hasBookings ? bookings.length : HOTEL_STATS.totalBookings
+    const todaysCheckIns = hasBookings
+      ? bookings.filter((b) => b.status === 'Checked-In').length
+      : HOTEL_STATS.todaysCheckIns
+    const todaysCheckOuts = hasBookings
+      ? bookings.filter((b) => b.status === 'Checked-Out').length
+      : HOTEL_STATS.todaysCheckOuts
+    const pendingArrivals = hasBookings
+      ? bookings.filter((b) => b.status === 'Confirmed').length
+      : HOTEL_STATS.pendingArrivals
     const occupancyRate =
       totalRooms > 0 ? Number(((occupiedRooms / totalRooms) * 100).toFixed(1)) : 67.2
 
     return {
       totalRooms,
-      availableRooms: availableRooms || HOTEL_STATS.availableRooms,
-      occupiedRooms: occupiedRooms || HOTEL_STATS.occupiedRooms,
-      cleanRooms: availableRooms || HOTEL_STATS.cleanRooms,
+      availableRooms,
+      occupiedRooms,
+      cleanRooms: availableRooms,
       totalGuests,
       totalBookings,
-      todaysCheckIns: todaysCheckIns || HOTEL_STATS.todaysCheckIns,
-      todaysCheckOuts: todaysCheckOuts || HOTEL_STATS.todaysCheckOuts,
-      pendingArrivals: pendingArrivals || HOTEL_STATS.pendingArrivals,
+      todaysCheckIns,
+      todaysCheckOuts,
+      pendingArrivals,
       occupancyRate,
     }
   }, [rooms, guests, bookings])
+
+  // Live recent bookings connected to BookingContext with fallback
+  const displayBookings = useMemo(() => {
+    return bookings && bookings.length > 0 ? bookings : recentBookingsList
+  }, [bookings, recentBookingsList])
+
+  // Dynamically computed room category occupancy from live RoomContext
+  const roomTypeStats = useMemo(() => {
+    if (!rooms || rooms.length === 0) {
+      return [
+        { name: 'Deluxe King Suites', occupied: 48, total: 50, rate: 96, color: '#1b4332' },
+        { name: 'Executive Family Suites', occupied: 24, total: 30, rate: 80, color: '#2d6a4f' },
+        { name: 'Penthouse Ocean Suites', occupied: 6, total: 8, rate: 75, color: '#f07f2e' },
+        { name: 'Standard King Rooms', occupied: 8, total: 40, rate: 20, color: '#94a3b8' },
+      ]
+    }
+    const grouped = {}
+    rooms.forEach((r) => {
+      const type = r.roomType || 'Standard Suite'
+      if (!grouped[type]) {
+        grouped[type] = { total: 0, occupied: 0 }
+      }
+      grouped[type].total += 1
+      if (r.availabilityStatus === 'Occupied' || r.status === 'Occupied') {
+        grouped[type].occupied += 1
+      }
+    })
+    const colors = ['#1b4332', '#2d6a4f', '#f07f2e', '#94a3b8', '#0ea5e9']
+    return Object.entries(grouped).map(([name, data], idx) => {
+      const rate = data.total > 0 ? Math.round((data.occupied / data.total) * 100) : 0
+      return {
+        name,
+        occupied: data.occupied,
+        total: data.total,
+        rate,
+        color: colors[idx % colors.length],
+      }
+    })
+  }, [rooms])
 
   const handleLogout = () => {
     logout()
@@ -133,7 +185,7 @@ export default function Dashboard() {
             <RevenueSummary />
 
             {/* Recent Bookings Table & Status Logs */}
-            <RecentBookings bookings={recentBookingsList} />
+            <RecentBookings bookings={displayBookings} />
           </div>
 
           {/* Right Sidebar Column (1/3): Quick Actions & Room Type Breakdown */}
@@ -156,45 +208,22 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-3.5">
-                <div>
-                  <div className="flex justify-between text-xs font-semibold mb-1">
-                    <span className="text-slate-700">Deluxe King Suites</span>
-                    <span className="text-slate-900 font-bold">48 / 50 (96%)</span>
+                {roomTypeStats.map((item) => (
+                  <div key={item.name}>
+                    <div className="flex justify-between text-xs font-semibold mb-1">
+                      <span className="text-slate-700 truncate pr-2">{item.name}</span>
+                      <span className="text-slate-900 font-bold shrink-0">
+                        {item.occupied} / {item.total} ({item.rate}%)
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min(100, item.rate)}%`, backgroundColor: item.color }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-[#1b4332] h-full rounded-full" style={{ width: '96%' }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-semibold mb-1">
-                    <span className="text-slate-700">Executive Family Suites</span>
-                    <span className="text-slate-900 font-bold">24 / 30 (80%)</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-[#2d6a4f] h-full rounded-full" style={{ width: '80%' }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-semibold mb-1">
-                    <span className="text-slate-700">Penthouse Ocean Suites</span>
-                    <span className="text-slate-900 font-bold">6 / 8 (75%)</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-[#f07f2e] h-full rounded-full" style={{ width: '75%' }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-semibold mb-1">
-                    <span className="text-slate-700">Standard King Rooms</span>
-                    <span className="text-slate-900 font-bold">8 / 40 (20%)</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-slate-400 h-full rounded-full" style={{ width: '20%' }} />
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 

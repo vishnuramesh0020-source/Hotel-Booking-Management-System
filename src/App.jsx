@@ -22,6 +22,7 @@ import BookingList from './pages/bookings/BookingList'
 import CheckInOutHub from './pages/checkin/CheckInOutHub'
 import PaymentList from './pages/payments/PaymentList'
 import BookingHistory from './pages/history/BookingHistory'
+import ReportsHub from './pages/reports/ReportsHub'
 
 export default function App() {
   return (
@@ -31,8 +32,8 @@ export default function App() {
           <BookingProvider>
             <PaymentProvider>
               <Router>
-              <Routes>
-              {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
+                <Routes>
+                  {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
               <Route
                 path="/login"
                 element={
@@ -131,6 +132,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/reports"
+                element={
+                  <ProtectedRoute>
+                    <ReportsHub />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Default Redirections */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -151,10 +160,10 @@ export default function App() {
               theme="dark"
             />
           </Router>
-          </PaymentProvider>
-          </BookingProvider>
-        </GuestProvider>
-      </RoomProvider>
-    </AuthProvider>
+        </PaymentProvider>
+      </BookingProvider>
+    </GuestProvider>
+  </RoomProvider>
+</AuthProvider>
   )
 }

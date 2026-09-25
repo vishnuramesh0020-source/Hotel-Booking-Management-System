@@ -9,8 +9,10 @@ import {
 } from 'lucide-react'
 import { RECENT_BOOKINGS } from '../../services/dashboardData'
 import { toast } from 'react-toastify'
+import { useBookings } from '../../context/BookingContext'
 
 export default function RecentBookings({ bookings: propBookings }) {
+  const bookingCtx = useBookings()
   const [bookings, setBookings] = useState(propBookings || RECENT_BOOKINGS)
   const [filterTab, setFilterTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
@@ -36,7 +38,14 @@ export default function RecentBookings({ bookings: propBookings }) {
     }
   }
 
-  const handleStatusChange = (id, newStatus) => {
+  const handleStatusChange = async (id, newStatus) => {
+    if (bookingCtx && bookingCtx.updateStatus) {
+      try {
+        await bookingCtx.updateStatus(id, newStatus)
+      } catch (err) {
+        console.error('Failed to update status in BookingContext:', err)
+      }
+    }
     setBookings((prev) =>
       prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b))
     )
