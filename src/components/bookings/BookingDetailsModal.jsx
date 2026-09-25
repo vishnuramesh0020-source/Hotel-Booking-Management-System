@@ -90,14 +90,14 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }) {
   const StatusIcon = statusConfig.icon
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 print:p-0 print:bg-white">
-      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8 print:shadow-none print:border-none print:m-0">
+    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 print:p-0 print:bg-white">
+      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200 print:shadow-none print:border-none print:m-0 print:max-h-none">
         {/* Header Action Bar */}
-        <div className="bg-[#1b4332] text-white p-6 sm:p-7 flex items-center justify-between print:hidden">
+        <div className="flex-shrink-0 bg-[#1b4332] text-white p-5 sm:p-6 flex items-center justify-between print:hidden">
           <div className="flex items-center gap-3">
             <HotelookLogo size="md" />
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Reservation Voucher</h2>
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight">Reservation Voucher</h2>
               <p className="text-xs text-emerald-200/80 font-mono mt-0.5">
                 Ref: {booking.id}
               </p>
@@ -135,7 +135,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }) {
         </div>
 
         {/* Voucher Content */}
-        <div className="p-6 sm:p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto min-h-0 p-5 sm:p-8 space-y-6">
           {/* Top Status & Reference Banner */}
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -363,13 +363,13 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }) {
         </div>
 
         {/* Footer */}
-        <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between print:hidden">
+        <div className="flex-shrink-0 p-4 sm:px-6 sm:py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between rounded-b-3xl print:hidden">
           <p className="text-xs text-slate-400">
             Hotelook Management System • Double Booking Protection Verified
           </p>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition cursor-pointer"
+            className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition cursor-pointer"
           >
             Close
           </button>

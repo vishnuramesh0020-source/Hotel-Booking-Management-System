@@ -73,13 +73,13 @@ export default function CheckInModal({ isOpen, onClose, booking, onSuccess }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/65 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8">
+    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-[#1b4332] text-white p-6 sm:p-7 flex items-center justify-between">
+        <div className="flex-shrink-0 bg-[#1b4332] text-white p-5 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-400/20 shadow-inner">
-              <UserCheck className="w-6 h-6" />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-400/20 shadow-inner shrink-0">
+              <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export default function CheckInModal({ isOpen, onClose, booking, onSuccess }) {
                   Ref: {booking.id}
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-0.5">
+              <h2 className="text-lg sm:text-2xl font-black tracking-tight mt-0.5">
                 Front-Desk Check-In
               </h2>
             </div>
@@ -105,7 +105,8 @@ export default function CheckInModal({ isOpen, onClose, booking, onSuccess }) {
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleCheckIn} className="p-6 sm:p-8 space-y-6">
+        <form onSubmit={handleCheckIn} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           {/* Guest & Room Summary Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Guest Profile Card */}
@@ -251,14 +252,15 @@ export default function CheckInModal({ isOpen, onClose, booking, onSuccess }) {
               />
             </div>
           </div>
+          </div>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          {/* Action Buttons Fixed Footer */}
+          <div className="flex-shrink-0 p-4 sm:px-6 sm:py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3 rounded-b-3xl">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition cursor-pointer"
             >
               Cancel
             </button>

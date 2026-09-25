@@ -101,12 +101,12 @@ export default function RoomModal({ isOpen, onClose, onSubmit, initialData = nul
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 my-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-3 sm:p-4 md:p-6 overflow-hidden">
+      <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="flex-shrink-0 flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#1b4332] text-white flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#1b4332] text-white flex items-center justify-center shadow-xs shrink-0">
               {isEditing ? <Edit3 className="w-5 h-5" /> : <PlusCircle className="w-5 h-5" />}
             </div>
             <div>
@@ -131,7 +131,8 @@ export default function RoomModal({ isOpen, onClose, onSubmit, initialData = nul
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4" noValidate>
+        <form onSubmit={handleSubmit(onFormSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden" noValidate>
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           {/* Row 1: Room Number & Room Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -341,13 +342,14 @@ export default function RoomModal({ isOpen, onClose, onSubmit, initialData = nul
               {...register('description')}
             />
           </div>
+          </div>
 
-          {/* Submit Actions */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+          {/* Submit Actions Sticky Footer */}
+          <div className="flex-shrink-0 p-4 sm:px-6 sm:py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3 rounded-b-3xl">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+              className="px-5 py-2.5 rounded-full text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 transition cursor-pointer"
             >
               Cancel
             </button>
