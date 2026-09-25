@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { RoomProvider } from './context/RoomContext'
 import { GuestProvider } from './context/GuestContext'
 import { BookingProvider } from './context/BookingContext'
+import { PaymentProvider } from './context/PaymentContext'
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import PublicRoute from './components/routes/PublicRoute'
 
@@ -19,6 +20,7 @@ import GuestList from './pages/guests/GuestList'
 import GuestProfile from './pages/guests/GuestProfile'
 import BookingList from './pages/bookings/BookingList'
 import CheckInOutHub from './pages/checkin/CheckInOutHub'
+import PaymentList from './pages/payments/PaymentList'
 
 export default function App() {
   return (
@@ -26,8 +28,9 @@ export default function App() {
       <RoomProvider>
         <GuestProvider>
           <BookingProvider>
-            <Router>
-            <Routes>
+            <PaymentProvider>
+              <Router>
+              <Routes>
               {/* Public Auth Routes (Redirects to /dashboard if already logged in) */}
               <Route
                 path="/login"
@@ -111,6 +114,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/payments"
+                element={
+                  <ProtectedRoute>
+                    <PaymentList />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Default Redirections */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -131,6 +142,7 @@ export default function App() {
               theme="dark"
             />
           </Router>
+          </PaymentProvider>
           </BookingProvider>
         </GuestProvider>
       </RoomProvider>

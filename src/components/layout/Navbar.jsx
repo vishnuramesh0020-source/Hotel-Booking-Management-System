@@ -1,4 +1,4 @@
-import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound } from 'lucide-react'
+import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound, CreditCard } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
@@ -106,6 +106,20 @@ export default function Navbar() {
               >
                 <KeyRound className="w-3.5 h-3.5" />
                 <span>Check-In/Out</span>
+              </NavLink>
+
+              <NavLink
+                to="/payments"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <CreditCard className="w-3.5 h-3.5" />
+                <span>Payments</span>
               </NavLink>
             </nav>
           )}
