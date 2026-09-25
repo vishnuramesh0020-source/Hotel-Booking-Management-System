@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import {
   apiFetchBookings,
   apiCreateBooking,
+  apiUpdateBooking,
   apiUpdateBookingStatus,
   apiCancelBooking,
   apiCheckInGuest,
@@ -49,6 +50,13 @@ export function BookingProvider({ children }) {
     return updated
   }
 
+  // Update general booking details (dates, notes, etc.)
+  const updateBooking = async (id, updateData) => {
+    const updated = await apiUpdateBooking(id, updateData)
+    setBookings((prev) => prev.map((b) => (String(b.id) === String(id) ? updated : b)))
+    return updated
+  }
+
   // Process Guest Check-In
   const checkInGuest = async (id, checkInData) => {
     const updated = await apiCheckInGuest(id, checkInData)
@@ -81,6 +89,7 @@ export function BookingProvider({ children }) {
     error,
     loadBookings,
     addBooking,
+    updateBooking,
     updateStatus,
     checkInGuest,
     checkOutGuest,

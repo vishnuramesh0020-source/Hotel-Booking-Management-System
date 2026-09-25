@@ -21,6 +21,7 @@ import GuestProfile from './pages/guests/GuestProfile'
 import BookingList from './pages/bookings/BookingList'
 import CheckInOutHub from './pages/checkin/CheckInOutHub'
 import PaymentList from './pages/payments/PaymentList'
+import BookingHistory from './pages/history/BookingHistory'
 
 export default function App() {
   return (
@@ -119,6 +120,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <PaymentList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/booking-history"
+                element={
+                  <ProtectedRoute>
+                    <BookingHistory />
                   </ProtectedRoute>
                 }
               />

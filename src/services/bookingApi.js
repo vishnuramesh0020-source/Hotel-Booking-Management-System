@@ -364,6 +364,46 @@ export async function apiUpdateBookingStatus(id, newStatus) {
 }
 
 /**
+ * Update booking dates and recalculate financials
+ */
+export async function apiUpdateBooking(id, updateData = {}) {
+  initBookingsStorage()
+  const stored = localStorage.getItem(BOOKINGS_STORAGE_KEY)
+  const bookings = stored ? JSON.parse(stored) : INITIAL_BOOKINGS
+
+  const index = bookings.findIndex((b) => String(b.id) === String(id))
+  if (index === -1) {
+    throw new Error(`Booking with reference "${id}" was not found.`)
+  }
+
+  let financials = {}
+  const targetCheckIn = updateData.checkIn || bookings[index].checkIn
+  const targetCheckOut = updateData.checkOut || bookings[index].checkOut
+  const price = updateData.pricePerNight || bookings[index].pricePerNight
+
+  if (targetCheckIn && targetCheckOut) {
+    financials = calculateBookingFinancials(price, targetCheckIn, targetCheckOut)
+  }
+
+  // Live Axios PUT simulation
+  try {
+    await axios.put(`${API_BASE_URL}/1`, { merge: true }, { timeout: 8000 })
+  } catch (err) {
+    console.warn('[Third-Party API] Cart PUT simulation:', err.message)
+  }
+
+  bookings[index] = {
+    ...bookings[index],
+    ...updateData,
+    ...financials,
+    updatedAt: new Date().toISOString(),
+  }
+
+  localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(bookings))
+  return bookings[index]
+}
+
+/**
  * Cancel a booking
  */
 export async function apiCancelBooking(id) {

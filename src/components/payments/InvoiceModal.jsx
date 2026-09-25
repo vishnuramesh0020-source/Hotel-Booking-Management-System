@@ -148,7 +148,7 @@ Thank you for choosing Hotelook. We look forward to your next visit!
         {/* Header Action Bar */}
         <div className="flex-shrink-0 bg-[#1b4332] text-white p-5 sm:p-6 flex items-center justify-between print:hidden">
           <div className="flex items-center gap-3">
-            <HotelookLogo size="md" />
+            <HotelookLogo size="md" variant="light" />
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200">

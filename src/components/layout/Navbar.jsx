@@ -1,4 +1,4 @@
-import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound, CreditCard } from 'lucide-react'
+import { LogOut, LayoutDashboard, BedDouble, Users, Calendar, KeyRound, CreditCard, History } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { toast } from 'react-toastify'
@@ -31,7 +31,7 @@ export default function Navbar() {
       <div className="w-full px-4 sm:px-8 lg:px-12 h-16 flex items-center justify-between">
         {/* Brand Logo & Nav */}
         <div className="flex items-center gap-6 sm:gap-8">
-          <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <Link to="/dashboard" className="flex items-center gap-2 shrink-0 hover:opacity-90 transition-opacity">
             <HotelookLogo size="md" />
           </Link>
 
@@ -120,6 +120,20 @@ export default function Navbar() {
               >
                 <CreditCard className="w-3.5 h-3.5" />
                 <span>Payments</span>
+              </NavLink>
+
+              <NavLink
+                to="/booking-history"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#1b4332] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`
+                }
+              >
+                <History className="w-3.5 h-3.5" />
+                <span>History</span>
               </NavLink>
             </nav>
           )}
